@@ -1,6 +1,5 @@
 # AI-Powered Ticket Management System
 
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/garv-mittal/AI-Ticket-Management-System)
 
 This repository contains a full-stack AI-Enhanced Ticket Management System. The application leverages AI to automatically triage, analyze, and assign support tickets, streamlining the workflow for support teams. It features a Node.js backend with Express, MongoDB, and Inngest for event-driven background processing, and a React frontend built with Vite and Tailwind CSS.
 
@@ -56,79 +55,6 @@ This entire process happens asynchronously without blocking the user interface, 
 *   **Routing**: React Router
 *   **Linting**: ESLint
 
-## Getting Started
-
-### Prerequisites
-
-*   Node.js (v18 or higher)
-*   npm or yarn
-*   A MongoDB database (local or cloud-based)
-*   Google Gemini API Key
-*   A Mailtrap account (for testing email notifications)
-
-### Backend Setup (`ai-ticket-assistant`)
-
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/garv-mittal/AI-Ticket-Management-System.git
-    cd AI-Ticket-Management-System/ai-ticket-assistant
-    ```
-
-2.  **Install dependencies:**
-    ```sh
-    npm install
-    ```
-
-3.  **Create and configure the environment file:**
-    Create a `.env` file in the `ai-ticket-assistant` directory and add the following variables:
-    ```env
-    PORT=3000
-    MONGO_URI="your_mongodb_connection_string"
-    JWT_SECRET="your_strong_jwt_secret"
-    GEMINI_API_KEY="your_google_gemini_api_key"
-
-    # Mailtrap Credentials
-    MAILTRAP_HOST="sandbox.smtp.mailtrap.io"
-    MAILTRAP_PORT=2525
-    MAILTRAP_USER="your_mailtrap_user"
-    MAILTRAP_PASS="your_mailtrap_password"
-    ```
-
-4.  **Run the backend server:**
-    ```sh
-    npm run dev
-    ```
-    The server will be running on `http://localhost:3000`.
-
-5.  **Run the Inngest Dev Server:**
-    In a separate terminal, run the Inngest development server. This allows you to see events and function logs in real-time at `http://localhost:8288`.
-    ```sh
-    npm run inngest-dev
-    ```
-
-### Frontend Setup (`ai-ticket-frontend`)
-
-1.  **Navigate to the frontend directory:**
-    ```sh
-    cd ../ai-ticket-frontend
-    ```
-
-2.  **Install dependencies:**
-    ```sh
-    npm install
-    ```
-
-3.  **Create the environment file:**
-    Create a `.env` file in the `ai-ticket-frontend` directory and add the following:
-    ```env
-    VITE_SERVER_URL=http://localhost:3000/api
-    ```
-
-4.  **Run the frontend development server:**
-    ```sh
-    npm run dev
-    ```
-    The frontend will be available at `http://localhost:5173`.
 
 ## Project Structure
 
