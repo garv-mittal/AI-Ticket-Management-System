@@ -5,6 +5,15 @@ import { NonRetriableError } from "inngest";
 import { sendMail } from "../../utils/mailer.util.js";
 import analyzeTicket from "../../utils/ai.util.js";
 
+/**
+ * Inngest function triggered when a ticket is created.
+ * - Fetches the ticket
+ * - Updates status to TODO
+ * - Uses AI to analyze and enrich the ticket
+ * - Assigns it to a moderator/admin based on matching skills
+ * - Sends an email notification to the assigned moderator
+ **/
+
 export const onTicketCreated = inngest.createFunction(
   { id: "on-ticket-created", retries: 2 },
   { event: "ticket/created" },
@@ -12,7 +21,7 @@ export const onTicketCreated = inngest.createFunction(
     try {
       const { ticketId } = event.data;
 
-      //fetch ticket from DB
+      // 1️⃣ fetch ticket from DB
       const ticket = await step.run("fetch-ticket", async () => {
         const ticketObject = await Ticket.findById(ticketId);
         if (!ticket) {
@@ -21,12 +30,15 @@ export const onTicketCreated = inngest.createFunction(
         return ticketObject;
       });
 
+      // 2️⃣ Immediately set the status to "TODO"
       await step.run("update-ticket-status", async () => {
         await Ticket.findByIdAndUpdate(ticket._id, { status: "TODO" });
       });
 
+      // 3️⃣ Analyze the ticket using AI for summary, priority, skills, and notes
       const aiResponse = await analyzeTicket(ticket);
 
+      // 4️⃣ If AI succeeded, update ticket details + extract skills
       const relatedskills = await step.run("ai-processing", async () => {
         let skills = [];
         if (aiResponse) {
@@ -43,6 +55,7 @@ export const onTicketCreated = inngest.createFunction(
         return skills;
       });
 
+      // 5️⃣ Assign to a moderator who has any matching skill (fallback: admin)
       const moderator = await step.run("assign-moderator", async () => {
         let user = await User.findOne({
           role: "moderator",
@@ -53,6 +66,7 @@ export const onTicketCreated = inngest.createFunction(
             },
           },
         });
+        // Fallback to admin if no matching moderator
         if (!user) {
           user = await User.findOne({
             role: "admin",
@@ -64,7 +78,8 @@ export const onTicketCreated = inngest.createFunction(
         return user;
       });
 
-      await setp.run("send-email-notification", async () => {
+      // 6️⃣ Send email notification to the assigned moderator (if any)
+      await step.run("send-email-notification", async () => {
         if (moderator) {
           const finalTicket = await Ticket.findById(ticket._id);
           await sendMail(
